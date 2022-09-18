@@ -1,0 +1,24 @@
+# Partly inspired by QT coding style
+BasedOnStyle: WebKit
+Language: Cpp
+ColumnLimit: 100
+PointerBindsToType: false
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterClass: true
+    AfterControlStatement: false
+    AfterEnum: false
+    AfterFunction: true
+    AfterCaseLabel: true
+    AfterNamespace: false
+    AfterObjCDeclaration: false
+    AfterStruct: true
+    AfterUnion: false
+    BeforeCatch: false
+    BeforeElse: false
+    IndentBraces: false
+AlignAfterOpenBracket: true
+AlwaysBreakTemplateDeclarations: true
+AllowShortEnumsOnASingleLine: false
+SortIncludes: false
