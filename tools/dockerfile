@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 # Install necessary packages
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get update \
-    && apt-get install -y wget bzip2 make unzip cppcheck
+    && apt-get install -y wget bzip2 make unzip cppcheck clang-format-12
 
 # Create a non-root user named "ubuntu"
 # But put in root group since GitHub actions needs permissions
