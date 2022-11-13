@@ -26,21 +26,19 @@ FORMAT = clang-format-12
 # Files
 TARGET = $(BIN_DIR)/nsumo
 
-DRIVERS_SRC = $(addprefix src/drivers/,\
-				uart.c \
-				i2c.c \
-				)
-APP_SRC = $(addprefix src/app/,\
-			drive.c \
-	  	  	enemy.c \
-			)
-TEST_SRC = $(addprefix src/test/,\
-		     test.c \
-			 )
-SOURCES = src/main.c \
-		  $(DRIVERS_SRC) \
-		  $(APP_SRC) \
-		  $(TEST_SRC)
+SOURCES_WITH_HEADERS = \
+		src/drivers/uart.c \
+		src/drivers/i2c.c \
+		src/app/drive.c \
+		src/app/enemy.c \
+
+SOURCES = \
+		src/main.c \
+		$(SOURCES_WITH_HEADERS)
+
+HEADERS = \
+		$(SOURCES_WITH_HEADERS:.c=.h) \
+		src/common/defines.h \
 
 OBJECT_NAMES = $(SOURCES:.c=.o)
 OBJECTS = $(patsubst %,$(OBJ_DIR)/%,$(OBJECT_NAMES))
@@ -53,7 +51,7 @@ LDFLAGS = -mmcu=$(MCU) $(addprefix -L,$(LIB_DIRS))
 
 # Build
 ## Linking
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJECTS) $(HEADERS)
 	echo $(OBJECTS)
 	@mkdir -p $(dir $@)
 	$(CC) $(LDFLAGS) $^ -o $@
@@ -82,4 +80,4 @@ cppcheck:
 	-i external/printf
 
 format:
-	@$(FORMAT) -i $(SOURCES)
+	@$(FORMAT) -i $(SOURCES) $(HEADERS)
