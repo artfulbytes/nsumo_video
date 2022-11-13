@@ -21,4 +21,5 @@ BraceWrapping:
 AlignAfterOpenBracket: true
 AlwaysBreakTemplateDeclarations: true
 AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
 SortIncludes: false
