@@ -27,6 +27,7 @@ FORMAT = clang-format-12
 TARGET = $(BIN_DIR)/nsumo
 
 SOURCES_WITH_HEADERS = \
+		src/drivers/mcu_init.c \
 		src/drivers/io.c \
 		src/app/drive.c \
 		src/app/enemy.c \
