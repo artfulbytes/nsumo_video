@@ -6,7 +6,7 @@ MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
 BIN_DIR = $(BUILD_DIR)/bin
-TI_CCS_DIR = $(TOOLS_DIR)/ccs1110/ccs
+TI_CCS_DIR = $(TOOLS_DIR)/ccs1120/ccs
 DEBUG_BIN_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/bin
 DEBUG_DRIVERS_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/drivers
 
@@ -27,8 +27,7 @@ FORMAT = clang-format-12
 TARGET = $(BIN_DIR)/nsumo
 
 SOURCES_WITH_HEADERS = \
-		src/drivers/uart.c \
-		src/drivers/i2c.c \
+		src/drivers/io.c \
 		src/app/drive.c \
 		src/app/enemy.c \
 
