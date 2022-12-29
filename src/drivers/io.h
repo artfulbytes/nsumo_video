@@ -5,9 +5,6 @@
  * This wraps the more crude register defines provided in the headers from
  * Texas Instruments */
 
-// TODO: Improve multiple HW targets handling
-#define LAUNCHPAD
-
 // clang-format off
 typedef enum {
     IO_10, IO_11, IO_12, IO_13, IO_14, IO_15, IO_16, IO_17,
