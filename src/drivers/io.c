@@ -140,9 +140,42 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
 #endif
 };
 
+typedef enum
+{
+    HW_TYPE_LAUNCHPAD,
+    HW_TYPE_NSUMO
+} hw_type_e;
+
+/* NSUMO has a pullup resistor on pin 3.4, so read that pin to detect the hardware type.
+ * The Launchpad lacks physical pins on port 3, but the corresponding port 3 registers still
+ * exist internally. */
+static hw_type_e io_detect_hw_type(void)
+{
+    P3SEL &= ~(BIT4);
+    P3SEL2 &= ~(BIT4);
+    P3DIR &= ~(BIT4);
+    P3REN &= ~(BIT4);
+    P3OUT &= ~(BIT4);
+    // If pin 3.4 is high it means there is an external pullup resistor
+    return P3IN & BIT4 ? HW_TYPE_NSUMO : HW_TYPE_LAUNCHPAD;
+}
+
 void io_init(void)
 {
-    // TODO: Loop initialize all pins
+#if defined(NSUMO)
+    // TODO: Assert
+    if (io_detect_hw_type() != HW_TYPE_NSUMO) {
+        while (1) { }
+    }
+#elif defined(LAUNCHPAD)
+    // TODO: Assert
+    if (io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
+        while (1) { }
+    }
+#else
+    // TODO: Assert
+    while (1) { }
+#endif
     for (io_e io = (io_e)IO_10; io < ARRAY_SIZE(io_initial_configs); io++) {
         io_configure(io, &io_initial_configs[io]);
     }
