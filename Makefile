@@ -18,7 +18,7 @@ MSPGCC_BIN_DIR = $(MSPGCC_ROOT_DIR)/bin
 MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
 BUILD_DIR = build/$(TARGET_NAME)
 OBJ_DIR = $(BUILD_DIR)/obj
-TI_CCS_DIR = $(TOOLS_DIR)/ccs1120/ccs
+TI_CCS_DIR = $(TOOLS_DIR)/ccs1210/ccs
 DEBUG_BIN_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/bin
 DEBUG_DRIVERS_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/drivers
 
@@ -39,8 +39,10 @@ FORMAT = clang-format-12
 TARGET = $(BUILD_DIR)/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
+		src/common/assert_handler.c \
 		src/drivers/mcu_init.c \
 		src/drivers/io.c \
+		src/drivers/led.c \
 		src/app/drive.c \
 		src/app/enemy.c \
 
