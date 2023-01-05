@@ -3,6 +3,7 @@
 
 #include <msp430.h>
 #include <stdint.h>
+#include <assert.h>
 
 #if defined(LAUNCHPAD)
 #define IO_PORT_CNT (2u)
@@ -12,11 +13,12 @@
 #define IO_PIN_CNT_PER_PORT (8u)
 
 /* Be a little smart here about how to extract the port and pin bit
- * from the enum io_generic_e (and io_e). Enums are represented as
- * 16-bit by default on MSP430, so given that the pins are ordered
- * in increasing order (see io_generic_e), and that there are 3 ports
+ * from the enum io_generic_e (and io_e). With compiler flag "-fshort-enums",
+ * the enums are represented as a single byte (8-bit), so given that the pins
+ * are ordered in increasing order (see io_generic_e), and that there are 3 ports
  * and 8 pins, the enum value can be viewed as:
- * [ Zeros (11-bits) | Port (2 bits) | pin (3 bits) ] */
+ * [ Zeros (3 bits) | Port (2 bits) | pin (3 bits) ] */
+static_assert(sizeof(io_generic_e) == 1, "Unexpected size, -fshort-enums missing?");
 #define IO_PORT_OFFSET (3u)
 #define IO_PORT_MASK (0x3u << IO_PORT_OFFSET)
 #define IO_PIN_MASK (0x7u)
