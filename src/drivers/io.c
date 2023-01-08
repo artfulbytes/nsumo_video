@@ -1,5 +1,6 @@
 #include "drivers/io.h"
 #include "common/defines.h"
+#include "common/assert_handler.h"
 
 #include <msp430.h>
 #include <stdint.h>
@@ -165,18 +166,11 @@ static hw_type_e io_detect_hw_type(void)
 void io_init(void)
 {
 #if defined(NSUMO)
-    // TODO: Assert
-    if (io_detect_hw_type() != HW_TYPE_NSUMO) {
-        while (1) { }
-    }
+    ASSERT(io_detect_hw_type() == HW_TYPE_NSUMO);
 #elif defined(LAUNCHPAD)
-    // TODO: Assert
-    if (io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
-        while (1) { }
-    }
+    ASSERT(io_detect_hw_type() == HW_TYPE_LAUNCHPAD);
 #else
-    // TODO: Assert
-    while (1) { }
+    ASSERT(0);
 #endif
     for (io_e io = (io_e)IO_10; io < ARRAY_SIZE(io_initial_configs); io++) {
         io_configure(io, &io_initial_configs[io]);
