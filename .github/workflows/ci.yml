@@ -11,3 +11,4 @@ jobs:
       - run: make cppcheck
       - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=NSUMO
       - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD
+      - run: TOOLS_PATH=/home/ubuntu/dev/tools tools/build_tests.sh
