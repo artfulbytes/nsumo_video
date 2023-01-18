@@ -2,6 +2,7 @@
 #define DEFINES_H
 
 #define UNUSED(x) (void)(x)
+#define SUPPRESS_UNUSED __attribute__((unused))
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 
 // TODO: Change clock rate from 1 MHz to 16 MHz
