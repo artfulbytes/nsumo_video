@@ -43,6 +43,8 @@ RM = rm
 DEBUG = LD_LIBRARY_PATH=$(DEBUG_DRIVERS_DIR) $(DEBUG_BIN_DIR)/mspdebug
 CPPCHECK = cppcheck
 FORMAT = clang-format-12
+SIZE = $(MSPGCC_BIN_DIR)/msp430-elf-size
+READELF = $(MSPGCC_BIN_DIR)/msp430-elf-readelf
 
 # Files
 TARGET = $(BUILD_DIR)/bin/$(TARGET_HW)/$(TARGET_NAME)
@@ -128,3 +130,10 @@ cppcheck:
 
 format:
 	@$(FORMAT) -i $(SOURCES) $(HEADERS)
+
+size: $(TARGET)
+	@$(SIZE) $(TARGET)
+
+symbols: $(TARGET)
+	# List symbols table sorted by size
+	@$(READELF) -s $(TARGET) | sort -n -k3
