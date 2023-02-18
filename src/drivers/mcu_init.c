@@ -14,4 +14,6 @@ void mcu_init(void)
     // Must stop watchdog first before anything else
     watchdog_stop();
     io_init();
+    // Enables globally
+    _enable_interrupts();
 }
