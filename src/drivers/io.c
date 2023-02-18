@@ -5,6 +5,7 @@
 #include <msp430.h>
 #include <stdint.h>
 #include <assert.h>
+#include <stddef.h>
 
 #if defined(LAUNCHPAD)
 #define IO_PORT_CNT (2u)
@@ -12,6 +13,8 @@
 #define IO_PORT_CNT (3u)
 #endif
 #define IO_PIN_CNT_PER_PORT (8u)
+// Port 3 is not interrupt capable
+#define IO_INTERRUPT_PORT_CNT (2u)
 
 /* Be a little smart here about how to extract the port and pin bit
  * from the enum io_generic_e (and io_e). With compiler flag "-fshort-enums",
@@ -39,6 +42,15 @@ static uint8_t io_pin_bit(io_e io)
     return 1 << io_pin_idx(io);
 }
 
+typedef enum
+{
+    IO_PORT1,
+    IO_PORT2,
+#if defined(NSUMO)
+    IO_PORT3
+#endif
+} io_port_e;
+
 /* TI's helper header (msp430.h) provides defines/variables for accessing the
  * registers, and the address of these are resolved during linking. For cleaner
  * code, smaller executable, and to avoid mapping between IO_PORT-enum and these
@@ -59,6 +71,16 @@ static volatile uint8_t *const port_in_regs[IO_PORT_CNT] = { &P1IN, &P2IN, &P3IN
 static volatile uint8_t *const port_sel1_regs[IO_PORT_CNT] = { &P1SEL, &P2SEL, &P3SEL };
 static volatile uint8_t *const port_sel2_regs[IO_PORT_CNT] = { &P1SEL2, &P2SEL2, &P3SEL2 };
 #endif
+
+static volatile uint8_t *const port_interrupt_flag_regs[IO_INTERRUPT_PORT_CNT] = { &P1IFG, &P2IFG };
+static volatile uint8_t *const port_interrupt_enable_regs[IO_INTERRUPT_PORT_CNT] = { &P1IE, &P2IE };
+static volatile uint8_t *const port_interrupt_edge_select_regs[IO_INTERRUPT_PORT_CNT] = { &P1IES,
+                                                                                          &P2IES };
+
+static isr_function isr_functions[IO_INTERRUPT_PORT_CNT][IO_PIN_CNT_PER_PORT] = {
+    [IO_PORT1] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    [IO_PORT2] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+};
 
 /* Unused pins should be
  * "Switched to port function, output direction or input with pullup/pulldown enabled"
@@ -272,4 +294,94 @@ void io_set_out(io_e io, io_out_e out)
 io_in_e io_get_input(io_e io)
 {
     return (*port_in_regs[io_port(io)] & io_pin_bit(io)) ? IO_IN_HIGH : IO_IN_LOW;
+}
+
+static void io_clear_interrupt(io_e io)
+{
+    *port_interrupt_flag_regs[io_port(io)] &= ~io_pin_bit(io);
+}
+
+/* This function also disables the interrupt because selecting the edge
+ * might trigger one according to the datasheet */
+static void io_set_interrupt_trigger(io_e io, io_trigger_e trigger)
+{
+    const uint8_t port = io_port(io);
+    const uint8_t pin = io_pin_bit(io);
+    io_disable_interrupt(io);
+    switch (trigger) {
+    case IO_TRIGGER_RISING:
+        *port_interrupt_edge_select_regs[port] |= pin;
+        break;
+    case IO_TRIGGER_FALLING:
+        *port_interrupt_edge_select_regs[port] &= ~pin;
+        break;
+    }
+    /* Also clear the interrupt here, because even if interrupt is disabled,
+     * the flag is still set */
+    io_clear_interrupt(io);
+}
+
+static void io_register_isr(io_e io, isr_function isr)
+{
+    const uint8_t port = io_port(io);
+    const uint8_t pin_idx = io_pin_idx(io);
+    ASSERT(isr_functions[port][pin_idx] == NULL);
+    isr_functions[port][pin_idx] = isr;
+}
+
+void io_configure_interrupt(io_e io, io_trigger_e trigger, isr_function isr)
+{
+    io_set_interrupt_trigger(io, trigger);
+    io_register_isr(io, isr);
+}
+
+static inline void io_unregister_isr(io_e io)
+{
+    const uint8_t port = io_port(io);
+    const uint8_t pin_idx = io_pin_idx(io);
+    isr_functions[port][pin_idx] = NULL;
+}
+
+void io_deconfigure_interrupt(io_e io)
+{
+    io_unregister_isr(io);
+    io_disable_interrupt(io);
+}
+
+void io_enable_interrupt(io_e io)
+{
+    *port_interrupt_enable_regs[io_port(io)] |= io_pin_bit(io);
+}
+
+void io_disable_interrupt(io_e io)
+{
+    *port_interrupt_enable_regs[io_port(io)] &= ~io_pin_bit(io);
+}
+
+static void io_isr(io_e io)
+{
+    const uint8_t port = io_port(io);
+    const uint8_t pin = io_pin_bit(io);
+    const uint8_t pin_idx = io_pin_idx(io);
+    if (*port_interrupt_flag_regs[port] & pin) {
+        if (isr_functions[port][pin_idx] != NULL) {
+            isr_functions[port][pin_idx]();
+        }
+        // Must explicitly clear interrupt in software
+        io_clear_interrupt(io);
+    }
+}
+
+INTERRUPT_FUNCTION(PORT1_VECTOR) isr_port_1(void)
+{
+    for (io_generic_e io = IO_10; io <= IO_17; io++) {
+        io_isr(io);
+    }
+}
+
+INTERRUPT_FUNCTION(PORT2_VECTOR) isr_port_2(void)
+{
+    for (io_generic_e io = IO_20; io <= IO_27; io++) {
+        io_isr(io);
+    }
 }

@@ -4,6 +4,7 @@
 #define UNUSED(x) (void)(x)
 #define SUPPRESS_UNUSED __attribute__((unused))
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
+#define INTERRUPT_FUNCTION(vector) void __attribute__((interrupt(vector)))
 
 // TODO: Change clock rate from 1 MHz to 16 MHz
 #define CYCLES_1MHZ (1000000u)
