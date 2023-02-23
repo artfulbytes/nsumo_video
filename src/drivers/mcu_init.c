@@ -13,10 +13,10 @@ static void init_clocks()
 
     /* Configure the internal oscillator (main clock) to run at 16 MHz.
      * This clock is used as a reference to produce a more stable DCO. */
-    BCSCTL1 |= CALBC1_16MHZ;
+    BCSCTL1 = CALBC1_16MHZ;
 
     // Sets the clock rate of the digitally controlled oscillator (DCO)
-    DCOCTL |= CALDCO_16MHZ;
+    DCOCTL = CALDCO_16MHZ;
 
     /* Set DCO as source for
      * MCLK: Master clock drives the CPU and some peripherals
