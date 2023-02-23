@@ -51,9 +51,11 @@ TARGET = $(BUILD_DIR)/bin/$(TARGET_HW)/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 		src/common/assert_handler.c \
+		src/common/ring_buffer.c \
 		src/drivers/mcu_init.c \
 		src/drivers/io.c \
 		src/drivers/led.c \
+		src/drivers/uart.c \
 		src/app/drive.c \
 		src/app/enemy.c \
 
