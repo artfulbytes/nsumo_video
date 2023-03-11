@@ -183,6 +183,18 @@ make symbols
 ```
 which is useful to track down the worst offenders.
 
+## Assert
+Several things happen when an assert occurs to make it easy to detect and localize.
+First it triggers a breakpoint (if a debugger is attached), then it traces the address
+of the assert, and finally it endlessly blinks an LED. The address printed, is the
+program counter, and _addr2line can be used to retrieve the file and line number,
+and there is a makefile rule for it. For example, if an assert triggered at address
+0x1234, you can run
+
+```
+make HW=LAUNCHPAD addr2line ADDR=0x1234
+```
+
 ## Schematic
 <img src="/docs/schematic.png">
 
