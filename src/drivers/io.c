@@ -105,6 +105,9 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_UART_RXD] = { IO_SELECT_ALT3, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_UART_TXD] = { IO_SELECT_ALT3, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
+    // Input (no resistor required according to datasheet of IR receiver)
+    [IO_IR_REMOTE] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_INPUT, IO_OUT_LOW },
+
 #if defined(LAUNCHPAD)
     // Unused pins
     [IO_UNUSED_1] = UNUSED_CONFIG,
@@ -112,7 +115,6 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_UNUSED_3] = UNUSED_CONFIG,
     [IO_UNUSED_4] = UNUSED_CONFIG,
     [IO_UNUSED_5] = UNUSED_CONFIG,
-    [IO_UNUSED_6] = UNUSED_CONFIG,
     [IO_UNUSED_7] = UNUSED_CONFIG,
     [IO_UNUSED_8] = UNUSED_CONFIG,
     [IO_UNUSED_9] = UNUSED_CONFIG,
@@ -121,9 +123,6 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_UNUSED_12] = UNUSED_CONFIG,
     [IO_UNUSED_13] = UNUSED_CONFIG,
 #elif defined(NSUMO)
-    // Input (no resistor required according to datasheet of IR receiver)
-    [IO_IR_REMOTE] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_INPUT, IO_OUT_LOW },
-
     /* I2C clock/data
      * Resistor: Disabled (there are external pull-up resistors)
      * Direction: Not applicable

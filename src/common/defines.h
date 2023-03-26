@@ -5,6 +5,7 @@
 #define SUPPRESS_UNUSED __attribute__((unused))
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 #define INTERRUPT_FUNCTION(vector) void __attribute__((interrupt(vector)))
+#define IS_ODD(x) (x & 1)
 
 #define CYCLES_1MHZ (1000000u)
 #define CYCLES_16MHZ (16u * CYCLES_1MHZ)
