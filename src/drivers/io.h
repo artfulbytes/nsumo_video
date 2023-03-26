@@ -28,7 +28,7 @@ typedef enum
     IO_UNUSED_3 = IO_15,
     IO_UNUSED_4 = IO_16,
     IO_UNUSED_5 = IO_17,
-    IO_UNUSED_6 = IO_20,
+    IO_IR_REMOTE = IO_20,
     IO_UNUSED_7 = IO_21,
     IO_UNUSED_8 = IO_22,
     IO_UNUSED_9 = IO_23,
