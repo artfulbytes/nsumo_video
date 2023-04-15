@@ -19,7 +19,6 @@ static struct ring_buffer tx_buffer = { .buffer = buffer, .size = sizeof(buffer)
  * For information on the corresponding transmission error
  * for common values, please refer to the table provided in
  * the family user guide (SLAU144K). */
-#define SMCLK (16000000u)
 #define BRCLK (SMCLK)
 #define UART_BAUD_RATE (115200u)
 static_assert(UART_BAUD_RATE < (BRCLK / 3.0f),
