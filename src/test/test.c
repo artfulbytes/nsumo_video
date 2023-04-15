@@ -4,6 +4,7 @@
 #include "drivers/uart.h"
 #include "drivers/ir_remote.h"
 #include "drivers/pwm.h"
+#include "drivers/tb6612fng.h"
 #include "common/assert_handler.h"
 #include "common/defines.h"
 #include <msp430.h>
@@ -194,6 +195,36 @@ static void test_pwm(void)
             pwm_set_duty_cycle(PWM_TB6612FNG_LEFT, duty_cycles[i]);
             pwm_set_duty_cycle(PWM_TB6612FNG_RIGHT, duty_cycles[i]);
             BUSY_WAIT_ms(3000);
+        }
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_tb6612fng(void)
+{
+    test_setup();
+    trace_init();
+    tb6612fng_init();
+    const tb6612fng_mode_e modes[] =
+    {
+        TB6612FNG_MODE_FORWARD,
+        TB6612FNG_MODE_REVERSE,
+        TB6612FNG_MODE_FORWARD,
+        TB6612FNG_MODE_REVERSE,
+    };
+    const uint8_t duty_cycles[] = { 100, 50, 25, 0 };
+    while (1) {
+        for (uint8_t i = 0; i < ARRAY_SIZE(duty_cycles); i++)
+        {
+            TRACE("Set mode %d and duty cycle %d", modes[i], duty_cycles[i]);
+            tb6612fng_set_mode(TB6612FNG_LEFT, modes[i]);
+            tb6612fng_set_mode(TB6612FNG_RIGHT, modes[i]);
+            tb6612fng_set_pwm(TB6612FNG_LEFT, duty_cycles[i]);
+            tb6612fng_set_pwm(TB6612FNG_RIGHT, duty_cycles[i]);
+            BUSY_WAIT_ms(3000);
+            tb6612fng_set_mode(TB6612FNG_LEFT, TB6612FNG_MODE_STOP);
+            tb6612fng_set_mode(TB6612FNG_RIGHT, TB6612FNG_MODE_STOP);
+            BUSY_WAIT_ms(1000);
         }
     }
 }
