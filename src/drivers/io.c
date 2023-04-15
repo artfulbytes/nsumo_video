@@ -108,12 +108,14 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     // Input (no resistor required according to datasheet of IR receiver)
     [IO_IR_REMOTE] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_INPUT, IO_OUT_LOW },
 
+    // Output driven by timer A0, direction must be set to output
+    [IO_PWM_MOTORS_LEFT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
+
 #if defined(LAUNCHPAD)
     // Unused pins
     [IO_UNUSED_1] = UNUSED_CONFIG,
     [IO_UNUSED_2] = UNUSED_CONFIG,
     [IO_UNUSED_3] = UNUSED_CONFIG,
-    [IO_UNUSED_4] = UNUSED_CONFIG,
     [IO_UNUSED_5] = UNUSED_CONFIG,
     [IO_UNUSED_7] = UNUSED_CONFIG,
     [IO_UNUSED_8] = UNUSED_CONFIG,
@@ -137,7 +139,6 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
     [IO_MOTORS_RIGHT_CC_2] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
     // Output driven by timer A0, direction must be set to output
-    [IO_PWM_MOTORS_LEFT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_PWM_MOTORS_RIGHT] = { IO_SELECT_ALT1, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
 
     /* Input
@@ -210,12 +211,13 @@ void io_get_current_config(io_e io, struct io_config *current_config)
 {
     const uint8_t port = io_port(io);
     const uint8_t pin = io_pin_bit(io);
-    const uint8_t sel1 = *port_sel1_regs[port] & pin;
-    const uint8_t sel2 = *port_sel2_regs[port] & pin;
+    const uint8_t sel1 = (*port_sel1_regs[port] & pin) ? 1 : 0;
+    const uint8_t sel2 = (*port_sel2_regs[port] & pin) ? 1 : 0;
     current_config->select = (io_select_e)((sel2 << 1) | sel1);
-    current_config->resistor = (io_resistor_e)(*port_ren_regs[port] & pin);
-    current_config->dir = (io_dir_e)(*port_dir_regs[port] & pin);
-    current_config->out = (io_out_e)(*port_out_regs[port] & pin);
+    current_config->resistor =
+        (*port_ren_regs[port] & pin) ? IO_RESISTOR_ENABLED : IO_RESISTOR_DISABLED;
+    current_config->dir = (*port_dir_regs[port] & pin) ? IO_DIR_OUTPUT : IO_DIR_INPUT;
+    current_config->out = (*port_out_regs[port] & pin) ? IO_OUT_HIGH : IO_OUT_LOW;
 }
 
 bool io_config_compare(const struct io_config *cfg1, const struct io_config *cfg2)
@@ -253,11 +255,11 @@ void io_set_direction(io_e io, io_dir_e direction)
     const uint8_t port = io_port(io);
     const uint8_t pin = io_pin_bit(io);
     switch (direction) {
-    case IO_DIR_OUTPUT:
-        *port_dir_regs[port] |= pin;
-        break;
     case IO_DIR_INPUT:
         *port_dir_regs[port] &= ~pin;
+        break;
+    case IO_DIR_OUTPUT:
+        *port_dir_regs[port] |= pin;
         break;
     }
 }
@@ -267,11 +269,11 @@ void io_set_resistor(io_e io, io_resistor_e resistor)
     const uint8_t port = io_port(io);
     const uint8_t pin = io_pin_bit(io);
     switch (resistor) {
-    case IO_RESISTOR_ENABLED:
-        *port_ren_regs[port] |= pin;
-        break;
     case IO_RESISTOR_DISABLED:
         *port_ren_regs[port] &= ~pin;
+        break;
+    case IO_RESISTOR_ENABLED:
+        *port_ren_regs[port] |= pin;
         break;
     }
 }
@@ -281,11 +283,11 @@ void io_set_out(io_e io, io_out_e out)
     const uint8_t port = io_port(io);
     const uint8_t pin = io_pin_bit(io);
     switch (out) {
-    case IO_OUT_HIGH:
-        *port_out_regs[port] |= pin;
-        break;
     case IO_OUT_LOW:
         *port_out_regs[port] &= ~pin;
+        break;
+    case IO_OUT_HIGH:
+        *port_out_regs[port] |= pin;
         break;
     }
 }

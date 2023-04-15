@@ -59,6 +59,7 @@ SOURCES_WITH_HEADERS = \
 		src/drivers/led.c \
 		src/drivers/uart.c \
 		src/drivers/ir_remote.c \
+		src/drivers/pwm.c \
 		src/app/drive.c \
 		src/app/enemy.c \
 		external/printf/printf.c \
