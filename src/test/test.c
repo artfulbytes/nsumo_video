@@ -5,6 +5,7 @@
 #include "drivers/ir_remote.h"
 #include "drivers/pwm.h"
 #include "drivers/tb6612fng.h"
+#include "app/drive.h"
 #include "common/assert_handler.h"
 #include "common/defines.h"
 #include <msp430.h>
@@ -226,6 +227,61 @@ static void test_tb6612fng(void)
             tb6612fng_set_mode(TB6612FNG_RIGHT, TB6612FNG_MODE_STOP);
             BUSY_WAIT_ms(1000);
         }
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_drive(void)
+{
+    test_setup();
+    trace_init();
+    drive_init();
+    ir_remote_init();
+    drive_speed_e speed = DRIVE_SPEED_SLOW;
+    drive_dir_e dir = DRIVE_DIR_FORWARD;
+    while (1) {
+        BUSY_WAIT_ms(100);
+        ir_cmd_e cmd = ir_remote_get_cmd();
+        switch (cmd) {
+        case IR_CMD_0:
+            drive_stop();
+            continue;
+        case IR_CMD_1:
+            speed = DRIVE_SPEED_SLOW;
+            break;
+        case IR_CMD_2:
+            speed = DRIVE_SPEED_MEDIUM;
+            break;
+        case IR_CMD_3:
+            speed = DRIVE_SPEED_FAST;
+            break;
+        case IR_CMD_4:
+            speed = DRIVE_SPEED_MAX;
+            break;
+        case IR_CMD_UP:
+            dir = DRIVE_DIR_FORWARD;
+            break;
+        case IR_CMD_DOWN:
+            dir = DRIVE_DIR_REVERSE;
+            break;
+        case IR_CMD_LEFT:
+            dir = DRIVE_DIR_ROTATE_LEFT;
+            break;
+        case IR_CMD_RIGHT:
+            dir = DRIVE_DIR_ROTATE_RIGHT;
+            break;
+        case IR_CMD_5:
+        case IR_CMD_6:
+        case IR_CMD_7:
+        case IR_CMD_8:
+        case IR_CMD_9:
+        case IR_CMD_STAR:
+        case IR_CMD_HASH:
+        case IR_CMD_OK:
+        case IR_CMD_NONE:
+            continue;
+        }
+        drive_set(dir, speed);
     }
 }
 
