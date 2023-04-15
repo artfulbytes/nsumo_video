@@ -13,6 +13,15 @@
 // Text + Program counter + Null termination
 #define ASSERT_STRING_MAX_SIZE (15u + 6u + 1u)
 
+#define GPIO_OUTPUT_LOW(port, bit)                                                                 \
+    do {                                                                                           \
+        P##port##SEL &= ~(BIT##bit);                                                               \
+        P##port##SEL2 &= ~(BIT##bit);                                                              \
+        P##port##DIR |= BIT##bit;                                                                  \
+        P##port##REN &= ~(BIT##bit);                                                               \
+        P##port##OUT &= ~(BIT##bit);                                                               \
+    } while (0)
+
 static void assert_trace(uint16_t program_counter)
 {
     // UART Tx
@@ -26,18 +35,8 @@ static void assert_trace(uint16_t program_counter)
 
 static void assert_blink_led(void)
 {
-    // Configure TEST LED pin on LAUNCHPAD
-    P1SEL &= ~(BIT0);
-    P1SEL2 &= ~(BIT0);
-    P1DIR |= BIT0;
-    P1REN &= ~(BIT0);
-
-    // Configure TEST LED pin on NSUMO
-    P2SEL &= ~(BIT6);
-    P2SEL2 &= ~(BIT6);
-    P2DIR |= BIT6;
-    P2REN &= ~(BIT6);
-
+    GPIO_OUTPUT_LOW(1, 0); // Test LED (Launchpad)
+    GPIO_OUTPUT_LOW(2, 6); // Test LED (Nsumo)
     while (1) {
         // Blink LED on both targets in case the wrong target was flashed
         P1OUT ^= BIT0;
@@ -46,12 +45,26 @@ static void assert_blink_led(void)
     };
 }
 
+// Stop the motors when something unexpected happens (assert) to prevent damage
+static void assert_stop_motors(void)
+{
+    GPIO_OUTPUT_LOW(1, 6); // Left PWM (Launchpad)
+    GPIO_OUTPUT_LOW(2, 1); // Left CC1 (Launchpad)
+    GPIO_OUTPUT_LOW(2, 2); // Left CC2 (Launchpad)
+    GPIO_OUTPUT_LOW(2, 4); // Left CC2 (Nsumo)
+    GPIO_OUTPUT_LOW(2, 5); // Left CC1 (Nsumo)
+    GPIO_OUTPUT_LOW(2, 7); // Right CC2 (Nsumo)
+    GPIO_OUTPUT_LOW(3, 7); // Right CC1 (Nsumo)
+    GPIO_OUTPUT_LOW(3, 5); // Left PWM (Nsumo)
+    GPIO_OUTPUT_LOW(3, 6); // Right PWM (Nsumo)
+}
+
 /* Minimize code dependency in this function to reduce the risk of accidently calling
  * a function with an assert in it, which would cause the assert_handler to be called
  * recursively until stack overflow. */
 void assert_handler(uint16_t program_counter)
 {
-    // TODO: Turn off motors ("safe state")
+    assert_stop_motors();
     BREAKPOINT
     assert_trace(program_counter);
     assert_blink_led();
