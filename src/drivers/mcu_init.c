@@ -22,6 +22,9 @@ static void init_clocks()
      * MCLK: Master clock drives the CPU and some peripherals
      * SMCLK: Subsystem master clock drives some peripherals */
     // BCSCTL2 default
+
+    // Select the internal Very Low Frequency oscillator (VLO) as ACLK source
+    BCSCTL3 = LFXT1S_2;
 }
 
 /* Watchdog is enabled by default and will reset the microcontroller repeatedly if not

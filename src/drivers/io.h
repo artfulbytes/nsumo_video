@@ -2,6 +2,7 @@
 #define IO_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 /* IO pins handling including pinmapping, initialization, and configuration.
  * This wraps the more crude register defines provided in the headers from
@@ -23,7 +24,7 @@ typedef enum
     IO_TEST_LED = IO_10,
     IO_UART_RXD = IO_11,
     IO_UART_TXD = IO_12,
-    IO_UNUSED_1 = IO_13,
+    IO_LINE_DETECT_FRONT_LEFT = IO_13,
     IO_UNUSED_2 = IO_14,
     IO_UNUSED_3 = IO_15,
     IO_PWM_MOTORS_LEFT = IO_16,
@@ -119,6 +120,8 @@ void io_set_direction(io_e io, io_dir_e direction);
 void io_set_resistor(io_e io, io_resistor_e resistor);
 void io_set_out(io_e io, io_out_e out);
 io_in_e io_get_input(io_e io);
+const io_e *io_adc_pins(uint8_t *cnt);
+uint8_t io_to_adc_idx(io_e io);
 
 typedef void (*isr_function)(void);
 void io_configure_interrupt(io_e io, io_trigger_e trigger, isr_function isr);
