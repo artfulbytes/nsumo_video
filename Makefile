@@ -65,6 +65,7 @@ SOURCES_WITH_HEADERS = \
 		src/drivers/qre1113.c \
 		src/app/drive.c \
 		src/app/enemy.c \
+		src/app/line.c \
 		external/printf/printf.c \
 
 ifndef TEST
