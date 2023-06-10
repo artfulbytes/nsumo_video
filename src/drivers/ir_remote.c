@@ -134,7 +134,7 @@ ir_cmd_e ir_remote_get_cmd(void)
 
 void ir_remote_init(void)
 {
-    io_configure_interrupt(IO_IR_REMOTE, IO_TRIGGER_FALLING, isr_pulse);
+    io_configure_interrupt(IO_IR_REMOTE, IO_TRIGGER_RISING, isr_pulse);
     io_enable_interrupt(IO_IR_REMOTE);
     timer_init();
 }
