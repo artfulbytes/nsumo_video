@@ -123,22 +123,23 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
 
     [IO_LINE_DETECT_FRONT_LEFT] = ADC_CONFIG,
 
-#if defined(LAUNCHPAD)
-    // Unused pins
-    [IO_UNUSED_2] = UNUSED_CONFIG,
-    [IO_UNUSED_5] = UNUSED_CONFIG,
-    [IO_UNUSED_9] = UNUSED_CONFIG,
-    [IO_UNUSED_10] = UNUSED_CONFIG,
-    [IO_UNUSED_11] = UNUSED_CONFIG,
-    [IO_UNUSED_12] = UNUSED_CONFIG,
-    [IO_UNUSED_13] = UNUSED_CONFIG,
-#elif defined(NSUMO)
+    [IO_XSHUT_FRONT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
+
     /* I2C clock/data
      * Resistor: Disabled (there are external pull-up resistors)
      * Direction: Not applicable
      * Output: Not applicable */
     [IO_I2C_SCL] = { IO_SELECT_ALT3, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_I2C_SDA] = { IO_SELECT_ALT3, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
+
+#if defined(LAUNCHPAD)
+    // Unused pins
+    [IO_UNUSED_2] = UNUSED_CONFIG,
+    [IO_UNUSED_3] = UNUSED_CONFIG,
+    [IO_UNUSED_9] = UNUSED_CONFIG,
+    [IO_UNUSED_11] = UNUSED_CONFIG,
+    [IO_UNUSED_13] = UNUSED_CONFIG,
+#elif defined(NSUMO)
 
     // Output
     [IO_MOTORS_RIGHT_CC_1] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
@@ -154,7 +155,6 @@ static const struct io_config io_initial_configs[IO_PORT_CNT * IO_PIN_CNT_PER_PO
                                     IO_OUT_HIGH },
 
     // Outputs
-    [IO_XSHUT_FRONT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_XSHUT_FRONT_LEFT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_XSHUT_RIGHT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
     [IO_XSHUT_LEFT] = { IO_SELECT_GPIO, IO_RESISTOR_DISABLED, IO_DIR_OUTPUT, IO_OUT_LOW },
