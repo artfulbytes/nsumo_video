@@ -64,6 +64,7 @@ SOURCES_WITH_HEADERS = \
 		src/drivers/adc.c \
 		src/drivers/qre1113.c \
 		src/drivers/i2c.c \
+		src/drivers/vl53l0x.c \
 		src/app/drive.c \
 		src/app/enemy.c \
 		src/app/line.c \

@@ -8,6 +8,7 @@
 #include "drivers/adc.h"
 #include "drivers/qre1113.h"
 #include "drivers/i2c.h"
+#include "drivers/vl53l0x.h"
 #include "app/drive.h"
 #include "app/line.h"
 #include "common/assert_handler.h"
@@ -381,6 +382,58 @@ static void test_i2c(void)
         } else {
             TRACE("Written value 0x%X doesn't match read value 0x%X", write_value, read_value);
         }
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPPRESS_UNUSED
+void test_vl53l0x(void)
+{
+    test_setup();
+    trace_init();
+    vl53l0x_result_e result = vl53l0x_init();
+    if (result) {
+        TRACE("vl53l0x_init failed");
+    }
+
+    while (1) {
+        uint16_t range = 0;
+        result = vl53l0x_read_range_single(VL53L0X_IDX_FRONT, &range);
+        if (result) {
+            TRACE("Range measure failed (result %u)", result);
+        } else {
+            if (range != VL53L0X_OUT_OF_RANGE) {
+                TRACE("Range %u mm", range);
+            } else {
+                TRACE("Out of range");
+            }
+        }
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPPRESS_UNUSED
+void test_vl53l0x_multiple(void)
+{
+    test_setup();
+    trace_init();
+    vl53l0x_result_e result = vl53l0x_init();
+    if (result) {
+        TRACE("vl53l0x_init failed");
+    }
+
+    while (1) {
+        vl53l0x_ranges_t ranges = { 0, 0, 0, 0, 0 };
+        bool fresh_values = false;
+        result = vl53l0x_read_range_multiple(ranges, &fresh_values);
+        if (result) {
+            TRACE("Range measure failed (result %u)", result);
+        }
+        TRACE("Range measure f %u fl %u fr %u l %u r %u", ranges[VL53L0X_IDX_FRONT],
+                                                          ranges[VL53L0X_IDX_FRONT_LEFT],
+                                                          ranges[VL53L0X_IDX_FRONT_RIGHT],
+                                                          ranges[VL53L0X_IDX_LEFT],
+                                                          ranges[VL53L0X_IDX_RIGHT]);
         BUSY_WAIT_ms(1000);
     }
 }
