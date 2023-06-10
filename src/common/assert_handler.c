@@ -48,7 +48,7 @@ static void assert_blink_led(void)
 // Stop the motors when something unexpected happens (assert) to prevent damage
 static void assert_stop_motors(void)
 {
-    GPIO_OUTPUT_LOW(1, 6); // Left PWM (Launchpad)
+    GPIO_OUTPUT_LOW(2, 6); // Left PWM (Launchpad)
     GPIO_OUTPUT_LOW(2, 1); // Left CC1 (Launchpad)
     GPIO_OUTPUT_LOW(2, 2); // Left CC2 (Launchpad)
     GPIO_OUTPUT_LOW(2, 4); // Left CC2 (Nsumo)

@@ -63,6 +63,7 @@ SOURCES_WITH_HEADERS = \
 		src/drivers/tb6612fng.c \
 		src/drivers/adc.c \
 		src/drivers/qre1113.c \
+		src/drivers/i2c.c \
 		src/app/drive.c \
 		src/app/enemy.c \
 		src/app/line.c \

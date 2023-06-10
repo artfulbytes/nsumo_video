@@ -138,8 +138,8 @@ static void uart_putchar_polling(char c)
     if (c == '\n') {
         uart_putchar_polling('\r');
     }
-    while (!(IFG2 & UCA0TXIFG)) { }
     UCA0TXBUF = c;
+    while (!(IFG2 & UCA0TXIFG)) { }
 }
 
 void uart_trace_assert(const char *string)
