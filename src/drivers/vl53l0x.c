@@ -685,6 +685,11 @@ static bool vl53l0x_is_sysrange_done(vl53l0x_idx_e idx)
     if (idx != VL53L0X_IDX_FRONT) {
         return true;
     }
+#elif defined(NSUMO)
+    if (idx != VL53L0X_IDX_FRONT_LEFT && idx != VL53L0X_IDX_FRONT
+        && idx != VL53L0X_IDX_FRONT_RIGHT) {
+        return true;
+    }
 #endif
     i2c_set_slave_address(vl53l0x_cfgs[idx].addr);
     uint8_t interrupt_status = 0;
