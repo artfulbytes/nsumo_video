@@ -4,6 +4,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: artfulbytes/msp430-gcc-9.3.1.11:latest
+    env:
+      TOOLS_PATH: /home/ubuntu/dev/tools
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
@@ -11,6 +13,6 @@ jobs:
           submodules: "true"
       - run: make format && git diff --quiet
       - run: make cppcheck
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=NSUMO
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools tools/build_tests.sh
+      - run: make HW=NSUMO
+      - run: make HW=LAUNCHPAD
+      - run: make tests

@@ -1,14 +1,16 @@
 # Check arguments
+GOALS_WITHOUT_HW = clean cppcheck format terminal tests
+GOAL_HAS_TARGET = $(filter $(MAKECMDGOALS),$(GOALS_WITHOUT_HW))
+ifeq ($(GOAL_HAS_TARGET),)
+
 ifeq ($(HW),LAUNCHPAD) # HW argument
 TARGET_HW=launchpad
 else ifeq ($(HW),NSUMO)
 TARGET_HW=nsumo
-else ifeq ($(MAKECMDGOALS),clean)
-else ifeq ($(MAKECMDGOALS),cppcheck)
-else ifeq ($(MAKECMDGOALS),format)
-# HW argument not required for this rule
 else
 $(error "Must pass HW=LAUNCHPAD or HW=NSUMO")
+endif
+
 endif
 TARGET_NAME=$(TARGET_HW)
 
@@ -26,7 +28,7 @@ MSPGCC_ROOT_DIR = $(TOOLS_DIR)/msp430-gcc
 MSPGCC_BIN_DIR = $(MSPGCC_ROOT_DIR)/bin
 MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
 BUILD_DIR = build
-OBJ_DIR = $(BUILD_DIR)/obj
+OBJ_DIR = $(BUILD_DIR)/$(TARGET_HW)/obj
 TI_CCS_DIR = $(TOOLS_DIR)/ccs1210/ccs
 DEBUG_BIN_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/bin
 DEBUG_DRIVERS_DIR = $(TI_CCS_DIR)/ccs_base/DebugServer/drivers
@@ -48,7 +50,7 @@ READELF = $(MSPGCC_BIN_DIR)/msp430-elf-readelf
 ADDR2LINE = $(MSPGCC_BIN_DIR)/msp430-elf-addr2line
 
 # Files
-TARGET = $(BUILD_DIR)/bin/$(TARGET_HW)/$(TARGET_NAME)
+TARGET = $(BUILD_DIR)/$(TARGET_HW)/bin/$(TARGET_NAME)
 
 SOURCES_WITH_HEADERS = \
 		src/common/assert_handler.c \
@@ -71,16 +73,16 @@ SOURCES_WITH_HEADERS = \
 		external/printf/printf.c \
 
 ifndef TEST
-SOURCES = \
-		src/main.c \
-		$(SOURCES_WITH_HEADERS)
+MAIN_FILE = src/main.c
 else
-SOURCES = \
-		src/test/test.c \
-		$(SOURCES_WITH_HEADERS)
-# Delete object file to force rebuild when changing test (there is probably a better way...)
-$(shell rm -f $(BUILD_DIR)/obj/src/test/test.o)
+MAIN_FILE = src/test/test.c
+# Touch test.c to force rebuild every time in case TEST define changed
+$(shell touch src/test/test.c)
 endif
+
+SOURCES = \
+		$(MAIN_FILE) \
+		$(SOURCES_WITH_HEADERS)
 
 HEADERS = \
 		$(SOURCES_WITH_HEADERS:.c=.h) \
@@ -132,7 +134,7 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
 # Phonies
-.PHONY: all clean flash cppcheck format
+.PHONY: all clean flash cppcheck format size symbols addr2line terminal tests
 
 all: $(TARGET)
 
@@ -157,3 +159,13 @@ symbols: $(TARGET)
 
 addr2line: $(TARGET)
 	@$(ADDR2LINE) -e $(TARGET) $(ADDR)
+
+terminal:
+	@# Running without sudo requires udev rule under /etc/udev/rules.d
+	@echo "picocom -b 115200 /dev/ttyUSB0"
+	@sleep 1
+	@picocom -b 115200 /dev/ttyUSB0
+
+tests:
+	@# Build all tests
+	@tools/build_tests.sh
