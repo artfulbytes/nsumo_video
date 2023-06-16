@@ -47,6 +47,7 @@ static void test_blink_led(void)
 SUPPRESS_UNUSED
 static void test_launchpad_io_pins_output(void)
 {
+#if defined(LAUNCHPAD)
     test_setup();
     const struct io_config output_config = { .select = IO_SELECT_GPIO,
                                             .resistor = IO_RESISTOR_DISABLED,
@@ -65,6 +66,7 @@ static void test_launchpad_io_pins_output(void)
             io_set_out(io, IO_OUT_LOW);
         }
     }
+#endif
 }
 
 /* Configure all pins except one (pin 1.0) as input with internal pull-up resistors. Configure
@@ -77,6 +79,7 @@ static void test_launchpad_io_pins_output(void)
 SUPPRESS_UNUSED
 static void test_launchpad_io_pins_input(void)
 {
+#if defined(LAUNCHPAD)
     test_setup();
     led_init();
     const struct io_config input_config = {
@@ -114,6 +117,7 @@ static void test_launchpad_io_pins_input(void)
         led_set(LED_TEST, LED_STATE_OFF);
         BUSY_WAIT_ms(2000);
     }
+#endif
 }
 
 SUPPRESS_UNUSED
@@ -131,6 +135,7 @@ static void io_20_isr(void)
 SUPPRESS_UNUSED
 static void test_io_interrupt(void)
 {
+#if defined(LAUNCHPAD)
     test_setup();
     const struct io_config input_config = {
         .select = IO_SELECT_GPIO,
@@ -146,6 +151,7 @@ static void test_io_interrupt(void)
     io_enable_interrupt(IO_11);
     io_enable_interrupt(IO_20);
     while(1);
+#endif
 }
 
 SUPPRESS_UNUSED
@@ -219,7 +225,7 @@ static void test_tb6612fng(void)
         TB6612FNG_MODE_FORWARD,
         TB6612FNG_MODE_REVERSE,
     };
-    const uint8_t duty_cycles[] = { 100, 50, 25, 0 };
+    const uint8_t duty_cycles[] = { 45, 35, 25, 0 };
     while (1) {
         for (uint8_t i = 0; i < ARRAY_SIZE(duty_cycles); i++)
         {
@@ -430,7 +436,8 @@ void test_vl53l0x_multiple(void)
         if (result) {
             TRACE("Range measure failed (result %u)", result);
         }
-        TRACE("Range measure f %u fl %u fr %u l %u r %u", ranges[VL53L0X_IDX_FRONT],
+        TRACE("Range measure (fresh %d) f %u fl %u fr %u l %u r %u", fresh_values,
+                                                          ranges[VL53L0X_IDX_FRONT],
                                                           ranges[VL53L0X_IDX_FRONT_LEFT],
                                                           ranges[VL53L0X_IDX_FRONT_RIGHT],
                                                           ranges[VL53L0X_IDX_LEFT],
