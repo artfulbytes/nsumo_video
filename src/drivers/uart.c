@@ -5,10 +5,10 @@
 #include <msp430.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stddef.h>
 
-#define UART_BUFFER_SIZE (16)
-static uint8_t buffer[UART_BUFFER_SIZE];
-static struct ring_buffer tx_buffer = { .buffer = buffer, .size = sizeof(buffer) };
+#define UART_BUFFER_SIZE (16u)
+STATIC_RING_BUFFER(tx_buffer, UART_BUFFER_SIZE, uint8_t);
 
 /* Calculate the integer and fractional part of the divisor
  * N = (Clock source / Desired baudrate)
@@ -52,7 +52,9 @@ static inline void uart_tx_disable_interrupt(void)
 static void uart_tx_start(void)
 {
     if (!ring_buffer_empty(&tx_buffer)) {
-        UCA0TXBUF = ring_buffer_peek(&tx_buffer);
+        uint8_t c = 0;
+        ring_buffer_peek_tail(&tx_buffer, &c);
+        UCA0TXBUF = c;
     }
 }
 
@@ -61,7 +63,7 @@ INTERRUPT_FUNCTION(USCIAB0TX_VECTOR) isr_uart_tx()
     ASSERT_INTERRUPT(!ring_buffer_empty(&tx_buffer));
 
     // Remove the transmitted data byte from the buffer
-    ring_buffer_get(&tx_buffer);
+    ring_buffer_get(&tx_buffer, NULL);
 
     // Clear interrupt here to avoid accidently clearing interrupt for next transmission
     uart_tx_clear_interrupt();
@@ -120,7 +122,7 @@ void _putchar(char c)
 
     uart_tx_disable_interrupt();
     const bool tx_ongoing = !ring_buffer_empty(&tx_buffer);
-    ring_buffer_put(&tx_buffer, c);
+    ring_buffer_put(&tx_buffer, &c);
     if (!tx_ongoing) {
         uart_tx_start();
     }

@@ -13,8 +13,7 @@ static_assert(TIMER_INTERRUPT_TICKS <= 0xFFFF, "Ticks too large");
 #define TIMER_TIMEOUT_ms (150u)
 
 #define IR_CMD_BUFFER_ELEM_CNT (10u)
-static uint8_t buffer[IR_CMD_BUFFER_ELEM_CNT];
-static struct ring_buffer ir_cmd_buffer = { .buffer = buffer, .size = IR_CMD_BUFFER_ELEM_CNT };
+STATIC_RING_BUFFER(ir_cmd_buffer, IR_CMD_BUFFER_ELEM_CNT, uint8_t);
 
 static union {
     struct
@@ -103,7 +102,7 @@ static void isr_pulse(void)
     }
 
     if (is_message_pulse(pulse_count)) {
-        ring_buffer_put(&ir_cmd_buffer, ir_message.decoded.cmd);
+        ring_buffer_put(&ir_cmd_buffer, &ir_message.decoded.cmd);
     }
 
     timer_start();
@@ -126,7 +125,7 @@ ir_cmd_e ir_remote_get_cmd(void)
     io_disable_interrupt(IO_IR_REMOTE);
     ir_cmd_e cmd = IR_CMD_NONE;
     if (!ring_buffer_empty(&ir_cmd_buffer)) {
-        cmd = ring_buffer_get(&ir_cmd_buffer);
+        ring_buffer_get(&ir_cmd_buffer, &cmd);
     }
     io_enable_interrupt(IO_IR_REMOTE);
     return cmd;
