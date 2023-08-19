@@ -41,7 +41,4 @@ bool enemy_at_left(const struct enemy *enemy);
 bool enemy_at_right(const struct enemy *enemy);
 bool enemy_at_front(const struct enemy *enemy);
 
-const char *enemy_pos_str(enemy_pos_e pos);
-const char *enemy_range_str(enemy_range_e range);
-
 #endif // ENEMY_H

@@ -28,6 +28,4 @@ typedef enum
 void ir_remote_init(void);
 ir_cmd_e ir_remote_get_cmd(void);
 
-const char *ir_remote_cmd_to_string(ir_cmd_e cmd);
-
 #endif // IR_REMOTE_H
