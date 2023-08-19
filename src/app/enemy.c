@@ -9,49 +9,6 @@
 #define RANGE_MID (200u) // mm
 #define RANGE_FAR (300u) // mm
 
-// These string functions are nice-to-haves, and can be removed if flash space is an issue
-const char *enemy_pos_str(enemy_pos_e pos)
-{
-    switch (pos) {
-    case ENEMY_POS_NONE:
-        return "NONE";
-    case ENEMY_POS_FRONT_LEFT:
-        return "FRONT_LEFT";
-    case ENEMY_POS_FRONT:
-        return "FRONT";
-    case ENEMY_POS_FRONT_RIGHT:
-        return "FRONT_RIGHT";
-    case ENEMY_POS_LEFT:
-        return "LEFT";
-    case ENEMY_POS_RIGHT:
-        return "RIGHT";
-    case ENEMY_POS_FRONT_AND_FRONT_LEFT:
-        return "FRONT_AND_FRONT_LEFT";
-    case ENEMY_POS_FRONT_AND_FRONT_RIGHT:
-        return "FRONT_AND_FRONT_RIGHT";
-    case ENEMY_POS_FRONT_ALL:
-        return "FRONT_ALL";
-    case ENEMY_POS_IMPOSSIBLE:
-        return "IMPOSSIBLE";
-    }
-    return "";
-}
-
-const char *enemy_range_str(enemy_range_e range)
-{
-    switch (range) {
-    case ENEMY_RANGE_NONE:
-        return "NONE";
-    case ENEMY_RANGE_CLOSE:
-        return "CLOSE";
-    case ENEMY_RANGE_MID:
-        return "MID";
-    case ENEMY_RANGE_FAR:
-        return "FAR";
-    }
-    return "";
-}
-
 struct enemy enemy_get(void)
 {
     struct enemy enemy = { ENEMY_POS_NONE, ENEMY_RANGE_NONE };
