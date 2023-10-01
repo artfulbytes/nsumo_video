@@ -1,0 +1,48 @@
+@startuml
+hide empty description
+
+[*] --> Wait
+state "<b>Wait</b>\n<i>Wait for start signal</i>" as Wait
+state "<b>Search</b>\n<i>Find enemy</i>" as Search
+state "<b>Attack</b>\n<i>Drive towards enemy</i>" as Attack
+state "<b>Retreat</b>\n<i>Drive away from line</i>\n<i>(see other diagram for details)</i>" as Retreat
+state "<b>Manual</b>\n<i>Remote control</i>" as Manual
+
+Wait --> Search : Command
+Search --> Attack : Enemy\ndetected
+Search --> Retreat : Line\ndetected
+Search --> Search : Timeout
+Search --> Manual : Command
+Attack --> Attack : Enemy\ndetected
+Attack --> Retreat : Line\ndetected
+Attack --> Search : None
+Attack --> Manual : Command
+Retreat --> Search : Finished
+Retreat --> Retreat : Timeout\n(next move)
+Retreat --> Manual : Command
+Manual --> Manual : Command
+
+state Search {
+    state "Search\nRotate" as Rotate
+    state "Search\nForward" as Forward
+    Rotate -> Forward
+    Forward -> Rotate
+}
+
+state Attack {
+    state Enemy <<choice>>
+    state "Attack\nLeft" as AttackLeft
+    state "Attack\nForward" as AttackForward
+    state "Attack\nRight" as AttackRight
+    Enemy --> AttackLeft : Enemy\nleft
+    Enemy --> AttackForward : Enemy\nfront
+    Enemy --> AttackRight : Enemy\nright
+}
+
+state Retreat {
+    state Line <<choice>>
+    state "Retreat\n*" as RetreatState
+    Line -> RetreatState : Line\n*
+}
+
+@enduml

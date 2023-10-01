@@ -1,0 +1,72 @@
+@startuml
+hide empty description
+
+state "<b>Retreat</b>\n<i>Drive away from line</i>" as Retreat
+[*] --> Retreat: Line
+
+state Retreat {
+    state ChoiceFromFl <<choice>>
+    state ChoiceFromFr <<choice>>
+    state ChoiceFromBl <<choice>>
+    state ChoiceFromBr <<choice>>
+    state ChoiceFromF <<choice>>
+    state ChoiceFromB <<choice>>
+    state ChoiceFromL <<choice>>
+    state ChoiceFromR <<choice>>
+    state ChoiceFromDl <<choice>>
+    state ChoiceFromDr <<choice>>
+
+    state ChoiceToFl <<choice>>
+        state FlAlignRight as "ALIGN_RIGHT"
+        state FlAlignLeft as "ALIGN_LEFT"
+        state FlReverse as "REVERSE"
+        ChoiceToFl --> FlAlignRight : Enemy\nright
+        ChoiceToFl --> FlAlignRight : Enemy\nfront
+        ChoiceToFl --> FlAlignLeft : Enemy\nleft
+        ChoiceToFl --> FlReverse : else
+    state ChoiceToFr <<choice>>
+        state FrAlignRight as "ALIGN_RIGHT"
+        state FrAlignLeft as "ALIGN_LEFT"
+        state FrReverse as "REVERSE"
+        ChoiceToFr --> FrAlignRight : Enemy\nright
+        ChoiceToFr --> FrAlignRight : Enemy\nfront
+        ChoiceToFr --> FrAlignLeft : Enemy\nleft
+        ChoiceToFr --> FrReverse : else
+    state ChoiceToBl <<choice>>
+        state BlArcturnRight as "ARCTURN_RIGHT"
+        state BlForward as "FORWARD"
+        ChoiceToBl --> BlArcturnRight : Drive\nreverse
+        ChoiceToBl --> BlArcturnRight : Arcturn\nright
+        ChoiceToBl --> BlForward : else
+    state ChoiceToBr <<choice>>
+        state BrArcturnLeft as "ARCTURN_LEFT"
+        state BrForward as "FORWARD"
+        ChoiceToBr --> BrArcturnLeft : Drive\nreverse
+        ChoiceToBr --> BrArcturnLeft : Arcturn\nleft
+        ChoiceToBr --> BrForward : else
+    state ChoiceToF <<choice>>
+        state FAlignRight as "ALIGN_RIGHT"
+        state FAlignLeft as "ALIGN_LEFT"
+        state FReverse as "REVERSE"
+        ChoiceToF --> FAlignRight : Enemy\nleft
+        ChoiceToF --> FAlignLeft : Enemy\nright
+        ChoiceToF --> FReverse : else
+    state "Forward" as ChoiceToB
+    state "Arcturn right" as ChoiceToL
+    state "Arcturn left" as ChoiceToR
+    state "Assert" as ChoiceToDl
+    state "Assert" as ChoiceToDr
+
+    ChoiceFromFl --> ChoiceToFl : Line\nFront left
+    ChoiceFromFr --> ChoiceToFr : Line\nFront right
+    ChoiceFromBl --> ChoiceToBl : Line\nBack left
+    ChoiceFromBr --> ChoiceToBr : Line\nBack right
+    ChoiceFromF --> ChoiceToF : Line front
+    ChoiceFromB --> ChoiceToB : Line Back
+    ChoiceFromL --> ChoiceToL : Line Left
+    ChoiceFromR --> ChoiceToR : Line Right
+    ChoiceFromDl --> ChoiceToDl : Line\nDiagonal left
+    ChoiceFromDr --> ChoiceToDr : Line\nDiagonal right
+}
+
+@enduml

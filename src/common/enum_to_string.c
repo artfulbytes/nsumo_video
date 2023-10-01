@@ -156,4 +156,41 @@ const char *drive_speed_to_string(drive_speed_e speed)
     }
     return "";
 }
+
+const char *state_to_string(state_e state)
+{
+    switch (state) {
+    case STATE_WAIT:
+        return "WAIT";
+    case STATE_SEARCH:
+        return "SEARCH";
+    case STATE_ATTACK:
+        return "ATTACK";
+    case STATE_RETREAT:
+        return "RETREAT";
+    case STATE_MANUAL:
+        return "MANUAL";
+    }
+    return "";
+}
+
+const char *state_event_to_string(state_event_e event)
+{
+    switch (event) {
+    case STATE_EVENT_TIMEOUT:
+        return "TIMEOUT";
+    case STATE_EVENT_LINE:
+        return "LINE";
+    case STATE_EVENT_ENEMY:
+        return "ENEMY";
+    case STATE_EVENT_FINISHED:
+        return "FINISHED";
+    case STATE_EVENT_COMMAND:
+        return "COMMAND";
+    case STATE_EVENT_NONE:
+        return "NONE";
+    }
+    return "";
+}
+
 #endif // DISABLE_ENUM_STRINGS
