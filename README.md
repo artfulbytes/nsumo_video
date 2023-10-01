@@ -195,6 +195,22 @@ and there is a makefile rule for it. For example, if an assert triggered at addr
 make HW=LAUNCHPAD addr2line ADDR=0x1234
 ```
 
+## Diagrams
+There are some PlantUML diagrams under _docs/_. The plaintext can be converted into
+a viewable image with
+
+```
+java -jar plantuml.jar diagram.uml
+```
+
+Download plantuml.jar from [PlantUML website](https://plantuml.com/), and install
+dependencies (on Ubuntu) with
+
+```
+sudo apt install default-jre
+sudo apt install graphviz
+```
+
 ## Schematic
 <img src="/docs/schematic.png">
 
@@ -204,3 +220,6 @@ make HW=LAUNCHPAD addr2line ADDR=0x1234
 ## Block diagram
 <img src="/docs/sysdiag.jpg">
 
+## State machine
+<img src="/docs/state_machine.png">
+<img src="/docs/retreat_state.png">
