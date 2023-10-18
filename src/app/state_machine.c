@@ -140,22 +140,24 @@ static inline void process_event(struct state_machine_data *data, state_event_e 
 
 static inline state_event_e process_input(struct state_machine_data *data)
 {
-    UNUSED(data);
-    // TODO: Get input (line, enemy, ir remote cmd)
-    // TODO: Save input to history
+    data->common.enemy = enemy_get();
+    data->common.line = line_get();
+    data->common.cmd = ir_remote_get_cmd();
+    const struct input input = { .enemy = data->common.enemy, .line = data->common.line };
+    input_history_save(&data->input_history, &input);
 
-    // TODO: Implement the below
-    // if remote command
-    //    return STATE_EVENT_COMMAND
-    // elif internal event
-    //    return internal_event
-    take_internal_event(data); // TODO: Use this properly
-    // elif timeout
-    //    return STATE_EVENT_TIMEOUT
-    // elif line detected
-    //    return STATE_EVENT_LINE
-    // elif enemy detect
-    //    return STATE_EVENT_ENEMY
+    if (data->common.cmd != IR_CMD_NONE) {
+        return STATE_EVENT_COMMAND;
+    } else if (has_internal_event(data)) {
+        return take_internal_event(data);
+    } else if (timer_timeout(&data->timer)) {
+        timer_clear(&data->timer);
+        return STATE_EVENT_TIMEOUT;
+    } else if (data->common.line != LINE_NONE) {
+        return STATE_EVENT_LINE;
+    } else if (enemy_detected(&data->common.enemy)) {
+        return STATE_EVENT_ENEMY;
+    }
     return STATE_EVENT_NONE;
 }
 
@@ -185,6 +187,7 @@ void state_machine_run(void)
 {
     struct state_machine_data data;
 
+    // Allocate input history here so the internal buffer remains allocated
     LOCAL_RING_BUFFER(input_history, INPUT_HISTORY_BUFFER_SIZE, struct input);
     data.input_history = input_history;
     data.common.input_history = &data.input_history;
