@@ -6,6 +6,7 @@
 void state_manual_enter(struct state_manual_data *data, state_e from, state_event_e event)
 {
     UNUSED(from);
+#ifndef DISABLE_IR_REMOTE
     if (event != STATE_EVENT_COMMAND) {
         return;
     }
@@ -41,4 +42,8 @@ void state_manual_enter(struct state_manual_data *data, state_e from, state_even
     case IR_CMD_NONE:
         break;
     }
+#else
+    UNUSED(data);
+    UNUSED(event);
+#endif
 }

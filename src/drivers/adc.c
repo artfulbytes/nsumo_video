@@ -52,7 +52,7 @@ void adc_init(void)
      * ADC10SHT_3: 64 * ADC10CLK sample and hold time (better readings?)
      * MSC: Multiple sample conversion
      * ADC10IE: Enable interrupt */
-    ADC10CTL0 = ADC10ON + SREF_0 + ADC10SHT_3 + MSC + ADC10IE;
+    ADC10CTL0 = ADC10ON + SREF_0 + ADC10SHT_2 + MSC + ADC10IE;
 
     // Enable ADC pins
     ADC10AE0 = adc10ae0;

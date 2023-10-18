@@ -110,6 +110,7 @@ DEFINES = \
 	$(TEST_DEFINE) \
 	-DPRINTF_INCLUDE_CONFIG_H \
 	-DDISABLE_ENUM_STRINGS \
+	-DDISABLE_TRACE \
 
 # Static Analysis
 ## Don't check the msp430 helper headers (they have a LOT of ifdefs)

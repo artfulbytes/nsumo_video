@@ -1,19 +1,27 @@
 #include "app/state_search.h"
 #include "app/drive.h"
 #include "app/timer.h"
+#include "app/input_history.h"
 #include "common/assert_handler.h"
 
-#define SEARCH_STATE_ROTATE_TIMEOUT (1000u)
+#define SEARCH_STATE_ROTATE_TIMEOUT (400u)
 #define SEARCH_STATE_FORWARD_TIMEOUT (3000u)
 
 static void state_search_run(struct state_search_data *data)
 {
-    // TODO: Check input history to see to what direction enemy was last seen
     switch (data->state) {
     case SEARCH_STATE_ROTATE:
-        // TODO: Check if enemy was last seen to right or left and set drive accordingly
+    {
+        // Rotate to where enemy was last seen
+        const struct enemy last_enemy =
+            input_history_last_directed_enemy(data->common->input_history);
+        if (enemy_at_right(&last_enemy)) {
+            drive_set(DRIVE_DIR_ROTATE_RIGHT, DRIVE_SPEED_FAST);
+        } else {
+            drive_set(DRIVE_DIR_ROTATE_LEFT, DRIVE_SPEED_FAST);
+        }
         timer_start(data->common->timer, SEARCH_STATE_ROTATE_TIMEOUT);
-        break;
+    } break;
     case SEARCH_STATE_FORWARD:
         drive_set(DRIVE_DIR_FORWARD, DRIVE_SPEED_FAST);
         timer_start(data->common->timer, SEARCH_STATE_FORWARD_TIMEOUT);
@@ -39,6 +47,7 @@ void state_search_enter(struct state_search_data *data, state_e from, state_even
             break;
         case STATE_EVENT_FINISHED:
             ASSERT(from == STATE_RETREAT);
+            // Switch state to avoid getting stuck driving back and forth when enemy lost
             if (data->state == SEARCH_STATE_FORWARD) {
                 data->state = SEARCH_STATE_ROTATE;
             }

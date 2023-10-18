@@ -455,6 +455,7 @@ void test_enemy(void)
     enemy_init();
     while (1) {
         struct enemy enemy = enemy_get();
+        UNUSED(enemy);
         TRACE("%s %s", enemy_pos_to_string(enemy.position), enemy_range_to_string(enemy.range));
         BUSY_WAIT_ms(1000);
     }

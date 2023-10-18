@@ -27,7 +27,49 @@ static const struct retreat_state retreat_states[] =
         .move_cnt = 1,
         .moves = { { DRIVE_DIR_REVERSE, DRIVE_SPEED_MAX, 300 } },
     },
-    // TODO: Add the rest
+    [RETREAT_STATE_FORWARD] =
+    {
+        .move_cnt = 1,
+        .moves = { { DRIVE_DIR_FORWARD, DRIVE_SPEED_FAST, 300 } },
+    },
+    [RETREAT_STATE_ROTATE_LEFT] =
+    {
+        .move_cnt = 1,
+        .moves = { { DRIVE_DIR_ROTATE_LEFT, DRIVE_SPEED_FAST, 150 } },
+    },
+    [RETREAT_STATE_ROTATE_RIGHT] =
+    {
+        .move_cnt = 1,
+        .moves = { { DRIVE_DIR_ROTATE_RIGHT, DRIVE_SPEED_FAST, 150 } },
+    },
+    [RETREAT_STATE_ARCTURN_LEFT] =
+    {
+        .move_cnt = 1,
+        .moves = { { DRIVE_DIR_ARCTURN_SHARP_LEFT, DRIVE_SPEED_MAX, 150 } },
+    },
+    [RETREAT_STATE_ARCTURN_RIGHT] =
+    {
+        .move_cnt = 1,
+        .moves = { { DRIVE_DIR_ARCTURN_SHARP_RIGHT, DRIVE_SPEED_MAX, 150 } },
+    },
+    [RETREAT_STATE_ALIGN_LEFT] =
+    {
+        .move_cnt = 3,
+        .moves = {
+            { DRIVE_DIR_REVERSE, DRIVE_SPEED_MAX, 300 },
+            { DRIVE_DIR_ARCTURN_SHARP_LEFT, DRIVE_SPEED_MAX, 250 },
+            { DRIVE_DIR_ARCTURN_MID_RIGHT, DRIVE_SPEED_MAX, 300 },
+        },
+    },
+    [RETREAT_STATE_ALIGN_RIGHT] =
+    {
+        .move_cnt = 3,
+        .moves = {
+            { DRIVE_DIR_REVERSE, DRIVE_SPEED_MAX, 300 },
+            { DRIVE_DIR_ARCTURN_SHARP_RIGHT, DRIVE_SPEED_MAX, 250 },
+            { DRIVE_DIR_ARCTURN_MID_LEFT, DRIVE_SPEED_MAX, 300 },
+        },
+    },
 };
 
 static const struct move *current_move(const struct state_retreat_data *data)
@@ -39,20 +81,57 @@ static retreat_state_e next_retreat_state(const struct state_retreat_data *data)
 {
     switch (data->common->line) {
     case LINE_FRONT_LEFT:
-        // TODO: Set retreat state based on input
+        if (enemy_at_right(&data->common->enemy) || enemy_at_front(&data->common->enemy)) {
+            return RETREAT_STATE_ALIGN_RIGHT;
+        } else if (enemy_at_left(&data->common->enemy)) {
+            return RETREAT_STATE_ALIGN_LEFT;
+        } else {
+            return RETREAT_STATE_REVERSE;
+        }
         break;
     case LINE_FRONT_RIGHT:
-        // TODO: Set retreat state based on input
+        if (enemy_at_left(&data->common->enemy) || enemy_at_front(&data->common->enemy)) {
+            return RETREAT_STATE_ALIGN_LEFT;
+        } else if (enemy_at_right(&data->common->enemy)) {
+            return RETREAT_STATE_ALIGN_RIGHT;
+        } else {
+            return RETREAT_STATE_REVERSE;
+        }
         break;
     case LINE_BACK_LEFT:
-        current_move(data); // TODO: Use this properly
-        // TODO: Set retreat state based on input
+        if (current_move(data)->dir == DRIVE_DIR_REVERSE) {
+            // 1. Line detected by both sensors on the right before timeout
+            //    This means the line is to the left
+            return RETREAT_STATE_ARCTURN_RIGHT;
+        } else if (data->state == RETREAT_STATE_ARCTURN_RIGHT) {
+            // 2. We are still detecting the line to the left,
+            //    keep arc-turning
+            return RETREAT_STATE_ARCTURN_RIGHT;
+        } else {
+            return RETREAT_STATE_FORWARD;
+        }
         break;
     case LINE_BACK_RIGHT:
-        // TODO: Set retreat state based on input
+        if (current_move(data)->dir == DRIVE_DIR_REVERSE) {
+            // 1. Line detected by both sensors on the left before timeout
+            //    This means the line is to the right
+            return RETREAT_STATE_ARCTURN_LEFT;
+        } else if (data->state == RETREAT_STATE_ARCTURN_LEFT) {
+            // 2. We are still detecting the line to the right,
+            //    keep arc-turning
+            return RETREAT_STATE_ARCTURN_LEFT;
+        } else {
+            return RETREAT_STATE_FORWARD;
+        }
         break;
     case LINE_FRONT:
-        // TODO: Set retreat state based on input
+        if (enemy_at_left(&data->common->enemy)) {
+            return RETREAT_STATE_ALIGN_LEFT;
+        } else if (enemy_at_right(&data->common->enemy)) {
+            return RETREAT_STATE_ALIGN_RIGHT;
+        } else {
+            return RETREAT_STATE_REVERSE;
+        }
         break;
     case LINE_BACK:
         return RETREAT_STATE_FORWARD;
