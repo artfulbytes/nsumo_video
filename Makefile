@@ -74,6 +74,7 @@ SOURCES_WITH_HEADERS = \
 		src/app/enemy.c \
 		src/app/line.c \
 		src/app/timer.c \
+		src/app/input_history.c \
 		src/app/state_machine.c \
 		src/app/state_wait.c \
 		src/app/state_search.c \

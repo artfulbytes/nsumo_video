@@ -6,6 +6,7 @@
 #include "app/state_retreat.h"
 #include "app/state_manual.h"
 #include "app/timer.h"
+#include "app/input_history.h"
 #include "common/trace.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
@@ -168,9 +169,7 @@ static inline void state_machine_init(struct state_machine_data *data)
     data->common.cmd = IR_CMD_NONE;
     data->common.timer = &data->timer;
     timer_clear(&data->timer);
-    // TODO: Internal event
     data->internal_event = STATE_EVENT_NONE;
-    // TODO: Input history
     data->wait.common = &data->common;
     data->search.common = &data->common;
     data->attack.common = &data->common;
@@ -181,10 +180,17 @@ static inline void state_machine_init(struct state_machine_data *data)
     state_retreat_init(&data->retreat);
 }
 
+#define INPUT_HISTORY_BUFFER_SIZE (6u)
 void state_machine_run(void)
 {
     struct state_machine_data data;
+
+    LOCAL_RING_BUFFER(input_history, INPUT_HISTORY_BUFFER_SIZE, struct input);
+    data.input_history = input_history;
+    data.common.input_history = &data.input_history;
+
     state_machine_init(&data);
+
     while (1) {
         const state_event_e next_event = process_input(&data);
         process_event(&data, next_event);
