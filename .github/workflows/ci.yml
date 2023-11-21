@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: "true"
-      - run: echo "hello from CI/CD"
+      - run: ls
       - run: make format && git diff --quiet
       - run: make cppcheck
       - run: make HW=NSUMO
