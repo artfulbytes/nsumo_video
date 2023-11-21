@@ -1,7 +1,7 @@
 on: [push]
 jobs:
   build_and_static_analysis:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     container:
       image: artfulbytes/msp430-gcc-9.3.1.11:latest
     env:
