@@ -17,4 +17,4 @@ jobs:
       - run: make HW=NSUMO
       - run: make HW=LAUNCHPAD
       - run: make tests
-      - run: ls -a
+      - run: ls -a build
