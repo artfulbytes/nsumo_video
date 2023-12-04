@@ -41,6 +41,7 @@ struct state_transition
 
 // See docs/state_machine.png (docs/state_machine.uml)
 static const struct state_transition state_transitions[] = {
+    { STATE_WAIT, STATE_EVENT_NONE, STATE_WAIT },
     { STATE_WAIT, STATE_EVENT_LINE, STATE_WAIT },
     { STATE_WAIT, STATE_EVENT_ENEMY, STATE_WAIT },
     { STATE_WAIT, STATE_EVENT_COMMAND, STATE_SEARCH },
