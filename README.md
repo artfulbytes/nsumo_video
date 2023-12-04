@@ -1,8 +1,7 @@
-# Nsumo (Work in progress)
+# Nsumo
 This repository tracks the code of Nsumo (500g 10x10cm Sumobot) as I re-write it
 from scratch and show the complete process in a [YouTube series](https://www.youtube.com/watch?v=g9KbXJydf8I&t=1s).
-You find the original code [here](https://github.com/artfulbytes/nsumo_software.git)
-and the hardware design [here](https://github.com/artfulbytes/nsumo_hardware.git).
+You find the hardware design [here](https://github.com/artfulbytes/nsumo_hardware.git).
 The project is meant to serve as an educational example and case study of a
 microcontroller-based embedded project.
 
