@@ -15,6 +15,7 @@ static bool initialized = false;
 void led_init(void)
 {
     ASSERT(!initialized);
+    io_configure(IO_TEST_LED, &led_config); // VMAT: added missing call to io_configure
     struct io_config current_config;
     io_get_current_config(IO_TEST_LED, &current_config);
     ASSERT(io_config_compare(&led_config, &current_config));
