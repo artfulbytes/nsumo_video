@@ -106,8 +106,8 @@ static void state_enter(struct state_machine_data *data, state_e from, state_eve
     if (from != to) {
         timer_clear(&data->timer);
         data->state = to;
-        TRACE("%s to %s (%s)", state_to_string(from), state_to_string(event),
-              state_event_to_string(to));
+        TRACE("%s to %s (%s)", state_to_string(from), state_to_string(to),
+              state_event_to_string(event));
     }
     switch (to) {
     case STATE_WAIT:
